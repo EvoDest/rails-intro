@@ -12,9 +12,11 @@ class MoviesController < ApplicationController
     @sort = params[:sort_by]
     if session[:sort_by].nil? or (!session[:sort_by].eql?(@sort) and !@sort.nil?)
 	session[:sort_by] = @sort
+	redirect_to movies_path(:ratings => session[:ratings], :sort_by => session[:sort_by])
     end
     if session[:ratings].nil? or (!session[:ratings].eql?(@ratings) and !@ratings.nil?)
         session[:ratings] = @ratings
+	redirect_to movies_path(:ratings => session[:ratings], :sort_by => session[:sort_by])
     end
     if session[:ratings].present? and session[:sort_by].present?
         @movies = Movie.where(:rating => session[:ratings].keys).order(session[:sort_by]).all
@@ -25,7 +27,6 @@ class MoviesController < ApplicationController
     else
         @movies = Movie.all
     end
-    flash.keep
   end
 
   def new
