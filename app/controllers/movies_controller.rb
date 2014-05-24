@@ -10,12 +10,18 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.AllowableRatings
     @ratings = params[:ratings]
     @sort = params[:sort_by]
-    if @ratings.present? and @sort.present?
-        @movies = Movie.where(:rating => @ratings.keys).order(@sort).all
-    elsif @ratings.present?
-        @movies = Movie.where(:rating => @ratings.keys).all
-    elsif @sort.present?
-       	@movies = Movie.order(@sort).all
+    if session[:sort_by].nil? or (!session[:sort_by].eql?(@sort) and !@sort.nil?)
+	session[:sort_by] = @sort
+    end
+    if session[:ratings].nil? or (!session[:ratings].eql?(@ratings) and !@ratings.nil?)
+        session[:ratings] = @ratings
+    end
+    if session[:ratings].present? and session[:sort_by].present?
+        @movies = Movie.where(:rating => session[:ratings].keys).order(session[:sort_by]).all
+    elsif session[:ratings].present?
+        @movies = Movie.where(:rating => session[:ratings].keys).all
+    elsif session[:sort_by].present?
+       	@movies = Movie.order(session[:sort_by]).all
     else
         @movies = Movie.all
     end
